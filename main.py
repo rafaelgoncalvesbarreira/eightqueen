@@ -9,4 +9,4 @@ if __name__=="__main__":
     #print(nqueen.get_allcost_fromcolumn([1,0,3,2],2))
     solution = nqueen.resolve([1,2,3,0])
     for i in solution:
-        print(solution[i])
+        print(i)

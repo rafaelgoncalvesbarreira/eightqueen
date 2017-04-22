@@ -52,7 +52,6 @@ def resolve(board):
     solution.append(board)
     last_column=-1
     last_row=[]
-    last_row_cost={}
     cost = count_target_attack(board)
 
     while not is_objective(cost):
@@ -71,9 +70,7 @@ def resolve(board):
         column_cost = get_allcost_fromcolumn(board, i_c)
         index_row=0
         row_cost=len(board)
-        #aqui é que o bixo pega
         for i, item in enumerate(column_cost):
-            
             if item < row_cost and (i not in last_row or i_c != last_column):
                 row_cost = item
                 index_row = i
@@ -85,7 +82,6 @@ def resolve(board):
         else:
             last_column = i_c
             last_row = [index_row]
-            last_row_cost[index_row]=row_cost
         solution.append(board)
         cost = count_target_attack(board) 
 

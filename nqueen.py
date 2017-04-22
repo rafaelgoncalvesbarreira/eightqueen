@@ -47,6 +47,25 @@ def get_allcost_fromcolumn(board, item_index):
 def is_objective(cost):
     return all(x == 0 for x in cost)
 
+def get_lowest(board, costs, current_row_index):
+    index_row=0
+    row_cost=len(board)
+    for i, item in enumerate(costs):
+        if item < row_cost:
+            row_cost = item
+            index_row = i
+    
+    if index_row == current_row_index:
+        copy=list(costs)
+        copy[current_row_index]=len(board)
+        index = get_lowest(board, copy, current_row_index)
+        if costs[index] <= costs[current_row_index]:
+            return index
+        else:
+            return current_row_index
+    else:
+        return index_row
+
 def resolve(board):
     solution = []
     solution.append(list(board))
@@ -73,18 +92,24 @@ def resolve(board):
         index_row=0
         row_cost=len(board)
         #aqui é que o bixo pega
-        for i, item in enumerate(column_cost):
-            #is_last_row_ok = i not in last_row
-            #if not is_last_row_ok:
-            #    pass
-            if item < row_cost: #and (is_last_row_ok or i_c != last_column): #esse "or" meio que limpa o last_row
-                row_cost = item
-                index_row = i
+
+        # for i, item in enumerate(column_cost):
+        #     '''
+        #     tenho que retornar o menor, e se for o que ja existe, um outro
+        #     '''
+        #     #is_last_row_ok = i not in last_row
+        #     #if not is_last_row_ok:
+        #     #    pass
+        #     if item < row_cost: #and (is_last_row_ok or i_c != last_column): #esse "or" meio que limpa o last_row
+        #         row_cost = item
+        #         index_row = i
+        index_row = get_lowest(board, column_cost,board[i_c])
 
         #nao pode ser o mesmo da jogada passada
         if board[i_c] != index_row:
             board[i_c]=index_row
             forbiden_column = -1
+            solution.append(list(board))
         else:
             #segue a vida
             forbiden_column = i_c
@@ -95,7 +120,6 @@ def resolve(board):
         #     last_column = i_c
         #     last_row = [index_row]
         #     last_row_cost= {index_row:row_cost}
-        solution.append(list(board))
         cost = count_target_attack(board) 
 
     return solution

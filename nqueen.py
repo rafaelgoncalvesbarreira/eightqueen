@@ -84,6 +84,8 @@ def resolve(board):
         solution.append(list(board))
 
         current_column = current_column + 1
+        if current_column >= len(board):
+            current_column = 0
 
         cost = count_target_attack(board) 
 

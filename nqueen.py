@@ -69,57 +69,22 @@ def get_lowest(board, costs, current_row_index):
 def resolve(board):
     solution = []
     solution.append(list(board))
-    last_column=-1
-    last_row=[]
-    last_row_cost={}
+    #last_column=-1
+    # last_row=[]
+    # last_row_cost={}
     cost = count_target_attack(board)
     forbiden_column = -1
 
+    current_column=0
+
     while not is_objective(cost):
-        #pego o o que tiver maior custo e mudo
-        c = 0 #custo da coluna
-        i_c =0 #indice da coluna com maior cust
-        
-        #if len(last_row) == len(board):
-        #    forbiden_column = last_column
-        #    last_row=[]
-        for i,item in enumerate(cost):
-            if item > c and i != forbiden_column:
-                c=item
-                i_c =i
+        column_costs = get_allcost_fromcolumn(board, current_column)
+        lowest_row = get_lowest(board,column_costs,current_column)
+        board[current_column] = lowest_row
+        solution.append(list(board))
 
-        column_cost = get_allcost_fromcolumn(board, i_c)
-        index_row=0
-        row_cost=len(board)
-        #aqui é que o bixo pega
+        current_column = current_column + 1
 
-        # for i, item in enumerate(column_cost):
-        #     '''
-        #     tenho que retornar o menor, e se for o que ja existe, um outro
-        #     '''
-        #     #is_last_row_ok = i not in last_row
-        #     #if not is_last_row_ok:
-        #     #    pass
-        #     if item < row_cost: #and (is_last_row_ok or i_c != last_column): #esse "or" meio que limpa o last_row
-        #         row_cost = item
-        #         index_row = i
-        index_row = get_lowest(board, column_cost,board[i_c])
-
-        #nao pode ser o mesmo da jogada passada
-        if board[i_c] != index_row:
-            board[i_c]=index_row
-            forbiden_column = -1
-            solution.append(list(board))
-        else:
-            #segue a vida
-            forbiden_column = i_c
-        # if last_column == i_c:
-        #     last_row.append(index_row)
-        #     last_row_cost[index_row]=row_cost
-        # else:
-        #     last_column = i_c
-        #     last_row = [index_row]
-        #     last_row_cost= {index_row:row_cost}
         cost = count_target_attack(board) 
 
     return solution

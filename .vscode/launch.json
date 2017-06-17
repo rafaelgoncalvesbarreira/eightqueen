@@ -6,7 +6,7 @@
             "type": "python",
             "request": "launch",
             "stopOnEntry": true,
-            "pythonPath": "${config.python.pythonPath}",
+            "pythonPath": "C:\\Python36\\python.exe",
             "program": "${file}",
             "cwd": "${workspaceRoot}",
             "env": null,

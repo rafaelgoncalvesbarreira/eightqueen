@@ -15,4 +15,9 @@ if False: # __name__=="__main__":
     for i in solution:
         print(i)
 if __name__=="__main__":
-    nqueen_genetico.resolve(8,population_size=12)
+    for i in range(50):
+        result = nqueen_genetico.resolve(8,generation_limit =5000,population_size=120,)
+        if result is not None:
+            print(result.board)
+        else:
+            print("sem resultados")

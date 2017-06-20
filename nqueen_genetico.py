@@ -1,5 +1,7 @@
 import nqueen
 import random
+import math
+import copy
 from specimen import Specimen
 
 def generate_inital_population(population_size, board_size):
@@ -35,39 +37,67 @@ def parent_selection(population, parents_size):
     
     return parents
 
-def reproduction(parents):
-    '''
-    reprodução gera 25%
-    cross over 50%
-    elitismo 25%
-    '''
-    
+def reproduction(parents, population_size):
+    newpopulation =[]
+    while len(newpopulation)<population_size:
+        p1_index =random.randrange(len(parents))
+        p2_index =random.randrange(len(parents))
+        children1, children2 = crossover(parents[p1_index],parents[p2_index])
+        newpopulation.append(children1)
+        newpopulation.append(children2)
+    return newpopulation
 
-def mutation(population, mutation_tax):
-    pass
+def crossover(subject1, subject2):
+    chromossome_size = len(subject1.board)
+    crossover_point = random.randrange(0,chromossome_size)
+    children1 = Specimen()
+    children1.board = subject1.board[:crossover_point] + subject2.board[crossover_point:]
+    children2 = Specimen()
+    children2.board = subject1.board[crossover_point:] + subject2.board[:crossover_point]
+    return children1, children2
+
+def mutation(parents, mutation_size):
+    mutated =[]
+    for i in range(mutation_size):
+        parent_index= random.randrange(len(parents))
+        copied = copy.deepcopy(parents[parent_index])
+        attr_index = random.randrange(len(copied.board))
+        value = copied.board[attr_index]
+        if random.randrange(2) == 1:
+            value = value + 1
+        else:
+            value = value -1
+        if value >= len(copied.board):
+            value=0
+        if value<0:
+            value = len(copied.board)-1
+
+        copied.board[attr_index] = value
+        mutated.append(copied)
+    
+    return mutated
 
 def found(population):
-    for subject in population:
-        if subject.cost == 0:
-            return True
-    
-    return False
-
-def founded_solution(population, costs):
-    pass
+    return population[0].cost == 0
 
 def resolve(board_size, generation_limit = 150, population_size=50):
     population = generate_inital_population(population_size, board_size)
     # cost = nqueen.count_target_attack(board)
     calc_fitness(population)
+    population.sort(key = lambda x:x.cost)
     i = 0
 
     while not found(population) and i < generation_limit:
-        population.sort(key = lambda x:x.cost)
         parents = parent_selection(population, int(population_size/2))
-        population = reproduction(parents)
-        mutation(population)
+        population = reproduction(parents, population_size)
+        mutation_size = math.ceil(population_size / 20) # 5%
+        mutated = mutation(parents,mutation_size)
+        population.extend(mutated)
         costs = calc_fitness(population)
+        population.sort(key = lambda x:x.cost)
         i = i+1
     
-    return founded_solution(population, costs)
+    if population[0].cost==0:
+        print("found in {0} generation".format(i))
+        return population[0]
+    return None
